@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body >
+    <div class="test" style="max-width: 400px"></div>
+    
+</body>
+</html>
+<script>
+
+    //function to encrypt a string: returns an object containing the crypted string and a second string of keys used
+    function Encrypt(string, key, subKey)
+    {
+        //split the string
+        array = Spliter(string)
+        //converts the string into an array
+        array = Shuffler(array)
+        array = array[0]
+        //flating the array content into a single string
+        string = array.array.reduce((accumulator, currentValue)=>
+        {
+            return accumulator + currentValue.array
+        }, '')
+        //gets each key used to randomize the subarrays
+        var keys = array.array.reduce((accumulator, currentValue)=>
+        {
+            return accumulator + currentValue.key+ "-"
+        }, '')
+        //conatains all keys into one string
+        keys = key+'|'+subKey+'|'+keys + "$" + array.key
+        //crypts the final string
+        string = cypher(string, key, subKey)
+        //returns the string and the keys
+        return {str: string, keys: keys}
+    }
+
+    //function to decrypt a string
+    function Uncrypt(string, keys)
+    {
+        keys = keys.split("$")
+        //gets the rand key of the array
+        var primKey = +keys[1]
+        //differentiates the step of encryption and the char clone number from rand subarrays keys
+        keys = keys[0].split("|")
+        key = keys[0]
+        subKey = +keys[1]
+        //removes the last -
+        rand = keys[2].split("-")
+        //removes the last element ""
+        rand.pop()
+        //puts the rand arrays into the initial order used to crypt subarrays content
+        rand = rand.map(c=>
+        {
+            return +c.slice(0, c.length+1)
+        })
+        //uncrypts the string
+        string = cypher(string, key, subKey, 1)
+        //splits the array in order to get the initial one in Encrypt function
+        array = Spliter(string)
+        //put the rand array into the initial order used to crypt subarrays content
+        var c = UnshuffleSting([...array], primKey)
+        //put the rand arrays into the initial order used to crypt subarrays content
+        rand = UnshuffleSting([...rand], primKey)
+        
+        var c = c.map(str=>
+        {
+            var i = c.indexOf(str)
+            //unshuffles subarrays content
+            return UnshuffleSting(str.split(""), +rand[i])
+        })
+        //flatens the subarrays, transforms the result into a string
+        string = Join(c.flat())
+        return string
+    }
+
+    //function to slice an array regarding to its size: the index of splicing is the second greatest divider of the length of the string if it is not a prime number. Returns an array
+    function Spliter(string)
+    {
+        var length = string.length
+        var spliter = length, i = 0
+        while(i<length)
+        {
+            if(length%i==0)
+            {
+                spliter = i
+            }
+            i++
+        }
+
+        var array = []
+        for (var i = 0; i < spliter; i++)
+        {
+            array[i] = string.slice(i * length/spliter, length/spliter * (1 + i))
+        }
+        return [...array]
+    }
+
+    //function used to shuffle an array containing subarrays
+    function Shuffler(string)
+    {
+        var array = []
+        array.push(shuffleArray(string, Math.random()))
+        array = array.map(element => 
+        {
+            element.array = element.array.map(element =>
+            {
+                element = element.split('')
+                var y = shuffleArray(element, Math.random())
+                y.array = Join(y.array)
+                return y
+            })
+            return element
+        })
+        return array
+    }
+
+    //function responsible of mixing an array function of it size and a random number
+    function shuffleArray(array = [], rand)
+    {
+        for(var i = array.length - 1; i >= 0; i--)
+        {
+            var j = Math.floor(rand * (i + 1))
+            var temp = array[i]
+            array[i] = array[j]
+            array[j] = temp
+        }
+        return {array: array, key: rand}
+    }
+
+    //function responsible of reverting a mixed array function of it size and th appropriate random number: returns an array
+    function UnshuffleSting(array = [], rand)
+    {
+        for (var i = 0; i < array.length; i++)
+        {
+            var j = Math.floor(rand * (i + 1))
+            var temp = array[j]
+            array[j] = array[i]
+            array[i] = temp
+        }
+        return array
+    }
+
+    //fonction responsible of flating an array into a string: returns a string
+    function Join(array)
+    {
+        var string = ""
+        array.forEach(element =>
+        {
+            string += element
+        })
+        return string
+    }
+
+    //function controlling whether we have to call the Caesar encryption function or decrypion one: returns a string
+    function cypher(string, key, subKey, uncrypt = false)
+    {
+        var s = ""
+        if(uncrypt == false)
+        {
+            for (var i = 0; i < subKey; i++) 
+            {
+                s += Caesar(string, key * (i + 1))
+            }
+        }
+        else
+        {
+            string = string.slice(0, string.length / subKey)
+            s += Caesar(string, key, 1)
+        }
+        return s
+    }
+
+    //function enabling Caesar encryption or decryption
+    function Caesar(string, key, uncrypt = false)
+    {
+        var AllChars = []
+        var crypted = ""
+        for (var i = 32; i < 127; i++) {
+            AllChars.push(String.fromCharCode(i))
+        }
+
+        AllCharsLen = AllChars.length
+        finalKey = key 
+        for (var i = 0; i < string.length; i++) 
+        {
+            index = AllChars.indexOf(string[i])
+            finalIndex = finalKey + index
+            if(uncrypt == true)
+            {
+                finalIndex = index - finalKey
+                while (finalIndex < 0) 
+                {
+                    finalIndex = AllCharsLen + finalIndex
+                }
+            }
+            else
+            {
+                while (finalIndex > AllCharsLen - 1) 
+                {
+                    finalIndex = finalIndex - AllCharsLen
+                }
+            }
+            crypted += AllChars[finalIndex]
+        }
+        return crypted
+    }
+
+
+var test  = "Finalement cest fini"
+var crypted = Encrypt(test, 3, 7)
+var uncrypted = Uncrypt(crypted.str, crypted.keys)
+var div = document.getElementsByClassName("test")[0]
+div.innerHTML = test
+div.innerHTML += "<br>" 
+div.innerHTML += crypted.str
+div.innerHTML += "<br>"
+div.innerHTML += uncrypted
+
+
+</script>

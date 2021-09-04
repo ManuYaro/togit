@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0">
+
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+
+</head>
+
+
+<body style="padding: 0; margin: 0">
+    <div id="mapid" style="width: 100%; height: 90vh;"></div>
+    <div id="messages"></div>
+    <script type="text/babel">
+        var map = L.map('mapid').setView([11.19659, -2.37305], 5);
+        L.tileLayer('http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', 
+        {
+            attribution: 'Map data & copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        ///
+        /*var router = L.Routing.control({
+            waypoints: [
+                L.latLng(12.35, -1.516667),
+                L.latLng(11.19659, -2.37305)
+            ]
+        })
+            .on('routesfound', function (e) {
+                var routes = e.routes;
+            setMessage(routes.length + 'chemins ont ete trouve');
+
+        })
+            .addTo(map);*/
+        ///
+
+        map.on('click', (e)=>addMarker(e.latlng, "Camp 1171", true, circle = {raduis: 100, color: '#FF7F00',
+            fill: true, fillColor: '#FFFF00', fillOpacity: 0.9,}, isUserPos=false))
+
+        addMarker([12.35, -1.516667], `Moi`)
+
+        //function to create a new marker
+        function addMarker({coords, text, draggable = true, circle = {}, isUserPos = true}) 
+        {
+            var newMarker = new L.marker(coords, {draggable: draggable, inertia: true })
+            .bindPopup(isUserPos ? text : cornerInfo(text, coords))
+            .addTo(map);
+            if(circle != {})
+            {
+                var circle = new L.circle(coords, circle.raduis, 
+                {fill: true, fillColor: circle.fillColor, color:circle.color, fillOpacity: 0.2})
+                .addTo(map)
+            }
+            newMarker.openPopup()
+        }
+
+        function Marker(props)
+        {
+            return new L.marker(coords, {draggable: draggable, inertia: true })
+        }
+
+        function cornerInfo(text, coords)
+        {
+            var x = JSON.stringify(coords)
+            return '<div><b style="font-family: helvetica; display: flex; justify-content: center; text-align: justify; font-size: 12px">'+text+'ceci est du gros nimporte quoi</b><button onclick="alert('+x+')" style="background-color: #598bec; border-color: #598bec; color: white;">Itineraire</button>'
+        }
+
+        function pathTo(destination)
+        {
+            console.log(destination)
+            
+
+        }
+
+        function showMessage(state)
+        {
+            document.getElementById('messages').display = state
+        }
+
+        function selectParent(element)
+        {
+            element.parentElement.style.color = 'red'
+        }
+
+
+        function removeMarker(marker)
+        {
+            console.log(marker)
+            map.removeLayer(marker)
+        }
+
+        function setMessage(message)
+        {
+            document.getElementById('messages').innerHTML = message;
+        }
+
+
+/*        'color': '#FF7F00',
+ 'fill': true,
+ 'fillColor': '#FFFF00',
+ 'fillOpacity': 0.2,
+*/
+
+</script>
+
+
+
+</body>
+
+</html>

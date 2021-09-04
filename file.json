@@ -1,0 +1,35 @@
+[{
+	"_id": "001",
+	"_rev": "144-47fa3ba54c8761e98984c83197b1016d",
+	"title": " Yaaba",		
+	"type": " Drame/Enfants ",		
+	"main_actors": 
+    ["Noufou Ouédraogo", " Roukietou Barry", " Fatimata Sanga", "Adama Ouédraogo"],
+    "released_date": " 09/28/1989",
+	"directed_by": " Idrissa Ouedraogo",
+	"_attachments": 
+	{
+    		"myattachment.txt": 
+    		{
+	      	"content_type": "text/plain",
+	      	"data": "aGVsbG8gd29ybGQ="
+		}
+	}
+}
+,
+
+{
+    "title": "Titanic",
+    "type": "catastrophe, romance",
+    "main_actors": [
+        "Leonardo DiCaprio",
+        "Kate Winslet",
+        "Billy Zane"
+    ],
+    "released_date": "11/18/1997",
+    "directed_by": "James Cameron"
+}
+
+
+
+]
